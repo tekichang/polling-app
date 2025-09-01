@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app
 import { createClient } from "@/app/lib/supabase/client"
 import { useRouter } from "next/navigation"
 
-export function LoginForm() {
+export function RegisterForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const router = useRouter()
@@ -15,7 +15,7 @@ export function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
     })
@@ -31,9 +31,9 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>Sign In</CardTitle>
+        <CardTitle>Sign Up</CardTitle>
         <CardDescription>
-          Enter your credentials to access your account
+          Enter your information to create an account
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -65,7 +65,7 @@ export function LoginForm() {
             />
           </div>
           <Button type="submit" className="w-full">
-            Sign In
+            Sign Up
           </Button>
         </form>
       </CardContent>

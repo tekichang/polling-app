@@ -1,17 +1,29 @@
-import { Metadata } from 'next'
+"use client"
 
-export const metadata: Metadata = {
-  title: 'Dashboard - Polling App',
-  description: 'Your polling dashboard',
-}
+import { useAuth } from '@/app/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function DashboardPage() {
+  const { user } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/login')
+    }
+  }, [user, router])
+
+  if (!user) {
+    return null
+  }
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground">
-          Welcome to your polling dashboard
+          Welcome to your polling dashboard, {user.email}
         </p>
       </div>
       

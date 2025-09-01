@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { RegisterForm } from '@/app/components/forms/register-form'
 
 export const metadata: Metadata = {
   title: 'Register - Polling App',
@@ -16,12 +17,7 @@ export default function RegisterPage() {
           </p>
         </div>
         
-        {/* TODO: Add registration form component */}
-        <div className="space-y-4">
-          <div className="rounded-lg border p-4 text-center text-muted-foreground">
-            Registration form will be implemented here
-          </div>
-        </div>
+        <RegisterForm />
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { LoginForm } from '@/app/components/forms/login-form'
 
 export const metadata: Metadata = {
   title: 'Login - Polling App',
@@ -16,12 +17,7 @@ export default function LoginPage() {
           </p>
         </div>
         
-        {/* TODO: Add login form component */}
-        <div className="space-y-4">
-          <div className="rounded-lg border p-4 text-center text-muted-foreground">
-            Login form will be implemented here
-          </div>
-        </div>
+        <LoginForm />
       </div>
     </div>
   )
