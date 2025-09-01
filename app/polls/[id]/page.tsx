@@ -5,6 +5,7 @@ import { Button } from '@/app/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card'
 import { RadioGroup, RadioGroupItem } from '@/app/components/ui/radio-group'
 import { Label } from '@/app/components/ui/label'
+import { Loader2 } from 'lucide-react'
 
 interface PollPageProps {
   params: {
@@ -26,15 +27,32 @@ const mockPoll = {
 export default function PollPage({ params }: PollPageProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [hasVoted, setHasVoted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleVote = (e: React.FormEvent) => {
+  const handleVote = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedOption) {
-      // TODO: Show an error message
+      setError('Please select an option before submitting.')
       return
     }
+    
+    setIsLoading(true)
+    setError(null)
+
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
     console.log(`Voted for option ${selectedOption} on poll ${params.id}`)
+    setIsLoading(false)
     setHasVoted(true)
+  }
+
+  const handleOptionChange = (value: string) => {
+    setSelectedOption(value)
+    if (error) {
+      setError(null)
+    }
   }
 
   return (
@@ -58,7 +76,7 @@ export default function PollPage({ params }: PollPageProps) {
             <form onSubmit={handleVote} className="space-y-6">
               <RadioGroup
                 value={selectedOption ?? ''}
-                onValueChange={setSelectedOption}
+                onValueChange={handleOptionChange}
                 className="space-y-2"
               >
                 {mockPoll.options.map((option) => (
@@ -68,8 +86,14 @@ export default function PollPage({ params }: PollPageProps) {
                   </div>
                 ))}
               </RadioGroup>
-              <Button type="submit" className="w-full" disabled={!selectedOption}>
-                Submit Vote
+
+              {error && (
+                <p className="text-sm font-medium text-red-500">{error}</p>
+              )}
+
+              <Button type="submit" className="w-full" disabled={!selectedOption || isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading ? 'Voting...' : 'Submit Vote'}
               </Button>
             </form>
           )}
