@@ -5,6 +5,7 @@ import { Button } from "@/app/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group"
 import { Label } from "@/app/components/ui/label"
 import { Loader2 } from "lucide-react"
+import { handleVote } from "@/app/polls/actions"
 
 interface VoteFormProps {
   pollOptions: { id: string; text: string }[]
@@ -17,7 +18,7 @@ export function VoteForm({ pollOptions, pollId, onVoteSuccess }: VoteFormProps) 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleVote = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedOption) {
       setError("Please select an option before submitting.")
@@ -27,10 +28,14 @@ export function VoteForm({ pollOptions, pollId, onVoteSuccess }: VoteFormProps) 
     setIsLoading(true)
     setError(null)
 
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    const result = await handleVote(pollId, selectedOption)
 
-    console.log(`Voted for option ${selectedOption} on poll ${pollId}`)
+    if (result.error) {
+      setError(result.error)
+      setIsLoading(false)
+      return
+    }
+
     setIsLoading(false)
     onVoteSuccess()
   }
@@ -43,7 +48,7 @@ export function VoteForm({ pollOptions, pollId, onVoteSuccess }: VoteFormProps) 
   }
 
   return (
-    <form onSubmit={handleVote} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <RadioGroup
         value={selectedOption ?? ""}
         onValueChange={handleOptionChange}
