@@ -4,16 +4,47 @@ import { useAuth } from '@/app/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
+/**
+ * Dashboard page component for authenticated users.
+ * 
+ * This component provides the main dashboard interface for logged-in users.
+ * It includes authentication protection, user-specific content, and navigation
+ * to various polling features. The dashboard displays user information and
+ * provides quick access to poll management features.
+ * 
+ * Features:
+ * - Authentication protection (redirects to login if not authenticated)
+ * - User-specific welcome message
+ * - Quick access widgets for poll management
+ * - Responsive grid layout for dashboard widgets
+ * 
+ * @component
+ * @returns {JSX.Element | null} Dashboard page or null if not authenticated
+ * 
+ * @example
+ * // This component is automatically rendered when navigating to /dashboard
+ * // It requires the user to be authenticated via AuthContext
+ */
 export default function DashboardPage() {
+  // Get current user from authentication context
   const { user } = useAuth()
   const router = useRouter()
 
+  /**
+   * Effect hook to handle authentication state changes.
+   * 
+   * This effect monitors the user authentication state and redirects
+   * unauthenticated users to the login page. It runs whenever the
+   * user state or router changes.
+   */
   useEffect(() => {
+    // Redirect to login if no user is authenticated
     if (!user) {
       router.push('/login')
     }
   }, [user, router])
 
+  // Return null while redirecting or if no user (prevents flash of content)
   if (!user) {
     return null
   }

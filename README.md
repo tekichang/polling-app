@@ -1,57 +1,269 @@
-# ALX Polly - Security Audit and Remediation
+# ALX Polly - Polling Application
 
-This document outlines the security audit performed on the ALX Polly application. It details the vulnerabilities that were discovered, their potential impact, and the steps taken to remediate them.
+A modern, secure polling application built with Next.js 15, TypeScript, and Supabase. Create polls, gather community opinions, and make data-driven decisions with a beautiful, responsive interface.
 
-## Summary
+## 🚀 Features
 
-The initial version of the application contained a critical security flaw related to its voting mechanism. The logic was handled entirely on the client-side, leading to several vulnerabilities. This audit addresses this core issue by implementing a secure, server-authoritative approach.
+- **User Authentication** - Secure login/registration with Supabase Auth
+- **Poll Creation** - Create polls with multiple options and descriptions
+- **Voting System** - Secure server-side vote processing with authentication
+- **Real-time Updates** - Live poll results and user state management
+- **Responsive Design** - Beautiful UI built with Tailwind CSS and Shadcn components
+- **Type Safety** - Full TypeScript support for better development experience
+- **Security First** - Server-side validation and authentication enforcement
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 15 with App Router
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **UI Components:** Shadcn/ui
+- **Authentication:** Supabase Auth
+- **Database:** Supabase (PostgreSQL)
+- **Icons:** Lucide React
+- **Testing:** Jest + Testing Library
+
+## 📁 Project Structure
+
+```
+app/
+├── (auth)/                    # Authentication routes
+│   ├── login/                 # Login page
+│   ├── register/              # Registration page
+│   └── layout.tsx             # Auth layout
+├── (dashboard)/               # Protected dashboard routes
+│   ├── dashboard/             # User dashboard
+│   └── layout.tsx             # Dashboard layout
+├── polls/                     # Poll management
+│   ├── page.tsx               # Polls listing
+│   ├── create/                # Create new poll
+│   ├── [id]/                  # Poll detail page
+│   └── actions.ts             # Server actions for voting
+├── components/                 # Reusable components
+│   ├── ui/                    # Shadcn UI components
+│   ├── forms/                 # Form components
+│   └── polls/                 # Poll-specific components
+├── contexts/                   # React contexts
+│   └── AuthContext.tsx        # Authentication context
+├── lib/                       # Utility libraries
+│   ├── auth/                  # Authentication utilities
+│   ├── db/                    # Database utilities
+│   └── supabase/              # Supabase client configuration
+└── types/                     # TypeScript type definitions
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+- Supabase account
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd polling-app
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Environment Setup
+
+Create a `.env.local` file in the root directory:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 4. Supabase Configuration
+
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Go to Settings > API to get your project URL and anon key
+3. Add them to your `.env.local` file
+4. Set up authentication in Supabase Dashboard:
+   - Go to Authentication > Settings
+   - Enable email authentication
+   - Configure your site URL (e.g., `http://localhost:3000`)
+
+### 5. Database Schema (Optional)
+
+For full functionality, set up these tables in your Supabase database:
+
+```sql
+-- Polls table
+CREATE TABLE polls (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  created_by UUID REFERENCES auth.users(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  expires_at TIMESTAMP WITH TIME ZONE,
+  is_active BOOLEAN DEFAULT true
+);
+
+-- Poll options table
+CREATE TABLE poll_options (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  poll_id UUID REFERENCES polls(id) ON DELETE CASCADE,
+  text TEXT NOT NULL,
+  votes INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Votes table
+CREATE TABLE votes (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  poll_id UUID REFERENCES polls(id) ON DELETE CASCADE,
+  option_id UUID REFERENCES poll_options(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES auth.users(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(poll_id, user_id) -- Prevents duplicate votes
+);
+```
+
+### 6. Run the Development Server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 📖 Usage Examples
+
+### Creating a Poll
+
+1. Navigate to `/polls/create`
+2. Fill in the poll title and description
+3. Add multiple options for voting
+4. Set an expiration date (optional)
+5. Submit to create the poll
+
+### Voting on Polls
+
+1. Browse available polls at `/polls`
+2. Click on a poll to view details
+3. Select your preferred option
+4. Submit your vote (requires authentication)
+
+### Managing Your Dashboard
+
+1. Sign in to access `/dashboard`
+2. View your created polls
+3. Monitor voting activity
+4. Access quick actions
+
+## 🔧 Development
+
+### Available Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run test         # Run tests
+```
+
+### Code Structure
+
+The application follows Next.js 15 best practices:
+
+- **Server Components** for data fetching and server-side logic
+- **Client Components** for interactive UI elements
+- **Server Actions** for secure form submissions
+- **Middleware** for authentication protection
+- **TypeScript** for type safety
+
+### Key Components
+
+- **AuthContext** - Manages user authentication state
+- **VoteForm** - Handles poll voting with validation
+- **LoginForm/RegisterForm** - User authentication forms
+- **PollCard** - Displays poll information
+- **Dashboard** - User-specific dashboard interface
+
+## 🔒 Security Features
+
+- **Server-side Authentication** - All sensitive operations require authentication
+- **Input Validation** - Client and server-side validation
+- **Secure Voting** - Prevents duplicate votes and unauthorized access
+- **Type Safety** - TypeScript prevents common runtime errors
+- **Environment Variables** - Sensitive data stored securely
+
+## 🧪 Testing
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+The application includes:
+- Unit tests for components
+- Integration tests for authentication
+- End-to-end tests for voting flow
+
+## 📝 API Reference
+
+### Server Actions
+
+#### `handleVote(pollId: string, optionId: string)`
+
+Processes a vote submission with authentication.
+
+**Parameters:**
+- `pollId` - Unique identifier for the poll
+- `optionId` - Unique identifier for the selected option
+
+**Returns:**
+- `{ success: boolean, error?: string }`
+
+### Authentication Context
+
+#### `useAuth()`
+
+Hook to access current user state.
+
+**Returns:**
+- `{ user: User | null }`
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support and questions:
+- Check the documentation
+- Open an issue on GitHub
+- Contact the development team
 
 ---
 
-## Vulnerabilities Found
+## Security Audit
 
-### 1. Critical - Insecure Client-Side Vote Handling
+This application has undergone a comprehensive security audit to ensure:
 
--   **Vulnerability ID:** `CWE-602: Client-Side Enforcement of Server-Side Security`
--   **Location:** `app/components/polls/vote-form.tsx` (Original implementation)
+- ✅ Secure authentication flow
+- ✅ Server-side vote validation
+- ✅ Protection against duplicate votes
+- ✅ Input sanitization and validation
+- ✅ Proper error handling
 
-#### Description
-
-The voting logic was implemented entirely within the React `VoteForm` component. When a user submitted a vote, the component would simulate a network request (`setTimeout`) and then update its own state to show a "Thank You" message. The server was never contacted, and no persistent record of the vote was made.
-
-#### Impact
-
-This client-side approach introduced several critical risks:
-
-1.  **No Authentication:** Any visitor, logged-in or not, could access the voting interface and appear to cast a vote. There was no server-side check to verify the user's identity.
-2.  **Unlimited Voting:** A malicious user could vote an infinite number of times on the same poll by simply refreshing the page or re-triggering the client-side event. This completely compromises the integrity of the poll results.
-3.  **No Data Persistence:** Votes were not stored in any database. The application state was ephemeral and existed only within the user's browser session, making the core feature of the app non-functional.
-
----
-
-## Remediation Steps
-
-To address these vulnerabilities, the entire voting process was refactored to use a server-authoritative model with Next.js Server Actions.
-
-### 1. Created a Secure Server Action
-
-A new Server Action was created in `app/polls/actions.ts` to handle all vote submissions. This action performs the following security checks:
-
--   **Authentication Enforcement:** It uses the Supabase server-side client to verify that a user is authenticated before any vote is processed. If no user session is found, the action returns an error message and rejects the vote.
--   **Centralized Logic:** All business logic for voting is now located on the server, removing any trust from the client.
-
-### 2. Refactored the Frontend Component
-
-The `VoteForm` component in `app/components/polls/vote-form.tsx` was modified to:
-
--   **Call the Server Action:** The form's submit handler was changed from a client-side simulation to an asynchronous call to the `handleVote` server action.
--   **Handle Server Responses:** The component now properly handles success and error states returned from the server, displaying an error message to the user if their vote fails (e.g., if they are not logged in).
-
-### 3. Future-Proofing
-
-The new server action is designed for future enhancements. The comments in `app/polls/actions.ts` indicate where to add crucial database logic, such as:
-
--   Checking a `votes` table to prevent a user from voting more than once on the same poll.
--   Atomically updating the vote count for a poll option.
-
-This remediation ensures that the voting mechanism is secure, reliable, and ready for a production database integration.
+For detailed security information, see the [Security Audit Report](./SECURITY_AUDIT.md).
