@@ -1,11 +1,9 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
-import { createClient } from "@/app/lib/supabase/client"
-import { useRouter } from "next/navigation"
+import { useLoginForm } from "@/app/hooks/useLoginForm"
 
 /**
  * Login form component for user authentication.
@@ -28,52 +26,7 @@ import { useRouter } from "next/navigation"
  * }
  */
 export function LoginForm() {
-  // Form state management
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  
-  // Navigation and Supabase client setup
-  const router = useRouter()
-  const supabase = createClient()
-
-  /**
-   * Handles form submission for user login.
-   * 
-   * This function:
-   * - Prevents default form submission behavior
-   * - Attempts to authenticate the user with Supabase
-   * - Handles authentication errors gracefully
-   * - Redirects to dashboard on successful login
-   * 
-   * @param {React.FormEvent} e - Form submission event
-   * @returns {Promise<void>}
-   */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    try {
-      // Attempt to sign in with provided credentials
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      // Handle authentication errors
-      if (error) {
-        console.error('Login error:', error)
-        // TODO: Add user-facing error display (toast, alert, etc.)
-        return
-      }
-
-      // Redirect to dashboard on successful authentication
-      // The AuthContext will automatically update with the new user state
-      router.push("/dashboard")
-    } catch (error) {
-      // Handle unexpected errors
-      console.error('Unexpected login error:', error)
-      // TODO: Add user-facing error display
-    }
-  }
+  const { email, password, setEmail, setPassword, handleSubmit } = useLoginForm()
 
   return (
     <Card className="w-full max-w-md">

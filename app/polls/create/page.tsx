@@ -1,28 +1,35 @@
-import { Metadata } from 'next'
+"use client"
 
-export const metadata: Metadata = {
-  title: 'Create Poll - Polling App',
-  description: 'Create a new poll for the community',
-}
+import { createPoll } from '@/app/polls/actions'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useFormState } from 'react-dom'
 
 export default function CreatePollPage() {
+  const [state, formAction] = useFormState(createPoll, null)
+  
   return (
-    <div className="container mx-auto max-w-2xl py-8">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Create a new poll</h1>
-          <p className="text-muted-foreground">
-            Share your question with the community and gather opinions
-          </p>
-        </div>
-        
-        {/* TODO: Add create poll form component */}
-        <div className="rounded-lg border p-6">
-          <div className="text-center text-muted-foreground">
-            Poll creation form will be implemented here
-          </div>
-        </div>
+    <form action={formAction} className="container max-w-md space-y-4">
+      <h1 className="text-2xl font-bold">Create a new Poll</h1>
+      <div>
+        <Label htmlFor="title">Title</Label>
+        <Input id="title" name="title" placeholder="What's your favorite color?" required />
       </div>
-    </div>
+      <div>
+        <Label htmlFor="description">Description (optional)</Label>
+        <Input id="description" name="description" placeholder="A short description of your poll." />
+      </div>
+      <div>
+        <Label>Options</Label>
+        <Input name="option" placeholder="Option 1" required />
+        <Input name="option" placeholder="Option 2" required />
+        {/* A more robust solution would allow adding more options dynamically */}
+      </div>
+
+      {state?.error && <p className="text-red-500">{state.error}</p>}
+      
+      <Button type="submit">Create Poll</Button>
+    </form>
   )
 }
